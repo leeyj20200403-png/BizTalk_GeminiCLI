@@ -3,45 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BizTone Converter</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>BizTone Converter - 비즈니스 말투 변환기</title>
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <!-- Pretendard Font -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5', // Indigo-600
+                        secondary: '#F9FAFB', // Gray-50
+                    },
+                    fontFamily: {
+                        sans: ['Pretendard', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans KR', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer base {
+            body {
+                @apply bg-gray-50 text-gray-900 font-sans antialiased;
+            }
+        }
+        @layer components {
+            .panel-card {
+                @apply bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col h-full;
+            }
+            .btn-primary {
+                @apply bg-primary hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center gap-2;
+            }
+            .btn-outline {
+                @apply border border-gray-200 hover:bg-gray-50 text-gray-600 font-medium py-2 px-4 rounded-lg transition-all duration-200 disabled:opacity-50;
+            }
+            .textarea-input {
+                @apply w-full flex-grow p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none resize-none text-base leading-relaxed;
+            }
+            .spinner {
+                @apply w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin;
+            }
+        }
+    </style>
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1>BizTone Converter</h1>
-            <p>당신의 문장을 비즈니스 상황에 맞게 변환해 드립니다.</p>
+<body class="min-h-screen py-8 px-4 sm:py-12">
+    <div class="max-w-6xl mx-auto">
+        <header class="text-center mb-10 sm:mb-16">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4 tracking-tight">
+                BizTone <span class="text-primary">Converter</span>
+            </h1>
+            <p class="text-lg text-gray-500 max-w-2xl mx-auto">
+                일상적인 대화를 상황에 맞는 격식 있는 비즈니스 말투로 즉시 변환해 보세요.
+            </p>
         </header>
-        <main class="converter-wrapper">
+
+        <main class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
             <!-- 좌측: 입력 패널 -->
-            <div class="panel input-panel">
-                <h2>원본 텍스트 입력</h2>
-                <div class="textarea-container">
-                    <textarea id="original-text" placeholder="변환할 내용을 입력하세요... (최대 500자)"></textarea>
-                    <div id="char-counter" class="char-counter">0 / 500</div>
+            <section class="panel-card">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold text-gray-800">원본 텍스트 입력</h2>
+                    <span id="char-counter" class="text-sm text-gray-400 font-medium">0 / 500</span>
                 </div>
-                <div class="controls">
-                    <div class="control-group">
-                        <label for="target-select">누구에게 보내나요?</label>
-                        <select id="target-select">
-                            <option value="상사" selected>상사</option>
-                            <option value="타팀 동료">타팀 동료</option>
-                            <option value="고객">고객</option>
+                
+                <div class="relative flex-grow flex flex-col min-h-[300px]">
+                    <textarea id="original-text" 
+                              class="textarea-input" 
+                              placeholder="변환할 내용을 입력하세요... (예: 내일까지 보고서 다 씀?)"></textarea>
+                </div>
+
+                <div class="mt-6 flex flex-col sm:flex-row items-center gap-4">
+                    <div class="w-full sm:w-auto flex items-center gap-3">
+                        <label for="target-select" class="shrink-0 text-sm font-semibold text-gray-600">수신 대상</label>
+                        <select id="target-select" class="form-select w-full sm:w-48 rounded-xl border-gray-200 text-sm focus:border-primary focus:ring-primary/20">
+                            <option value="상사" selected>상사 (Upward)</option>
+                            <option value="타팀 동료">타팀 동료 (Lateral)</option>
+                            <option value="고객">고객 (External)</option>
                         </select>
                     </div>
-                    <button id="convert-btn">변환하기</button>
+                    <button id="convert-btn" class="btn-primary w-full sm:w-auto sm:ml-auto">
+                        <span>변환하기</span>
+                    </button>
                 </div>
-            </div>
+            </section>
 
             <!-- 우측: 결과 패널 -->
-            <div class="panel output-panel">
-                <h2>변환된 텍스트</h2>
-                <div id="output-text" class="textarea-container result-container">
-                    <p class="placeholder">이곳에 변환 결과가 표시됩니다.</p>
+            <section class="panel-card border-indigo-50 bg-indigo-50/10">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold text-gray-800">변환 결과</h2>
+                    <button id="copy-btn" class="btn-outline text-sm" disabled>
+                        복사하기
+                    </button>
                 </div>
-                <button id="copy-btn" class="copy-btn" disabled>복사하기</button>
-            </div>
+
+                <div id="output-text" class="textarea-input bg-gray-50/50 flex flex-col min-h-[300px] overflow-y-auto prose prose-sm max-w-none">
+                    <p class="text-gray-400 italic">왼쪽에서 텍스트를 입력하고 변환하기 버튼을 눌러주세요.</p>
+                </div>
+            </section>
         </main>
+
+        <footer class="mt-16 text-center text-sm text-gray-400">
+            <p>&copy; 2026 BizTone Converter. All rights reserved.</p>
+        </footer>
     </div>
     
     <script src="js/script.js"></script>

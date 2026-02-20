@@ -137,8 +137,13 @@
 ### 3단계: 백엔드 로직 구현 (완료 목표: Sprint 3)
 - **주요 내용**:
   - Groq AI API를 활용한 실제 말투 변환 로직 구현
+    - 모델명은 model="moonshotai/kimi-k2-instruct-0905"
+    - @app.route('/api/convert', methods=['POST']) 함수를 생성해야 함.
   - 대상별 프롬프트 엔지니어링 적용
+    - 상사 (Upward), 타팀 동료 (Lateral), 고객 (External)
+    - 대상별 프롬프트는 한글로 작성해 줘
   - 오류 처리 및 로깅 시스템 보강
+  - @backend/app.py 정적인 페이지 라우팅 로직은 그대로 유지해야 함.
 
 ### 4단계: 통합 및 배포 (완료 목표: Sprint 4)
 - **주요 내용**:
@@ -150,9 +155,9 @@
 
 ## 7. 기술 고려사항 (Technical Considerations)
 
-- **프론트엔드**: HTML5, CSS3 (Flexbox/Grid), JavaScript (ES6+)
+- **프론트엔드**: HTML5, Tailwind CSS (CDN), JavaScript (ES6+)
 - **백엔드**: Python, Flask (RESTful API), python-dotenv, Flask-CORS
-- **AI**: Groq AI API
+- **AI**: Groq AI API (Model: llama3-8b-8192)
 - **배포**: Vercel (정적 호스팅 및 서버리스 함수)
 - **버전 관리**: Git, GitHub (feature -> develop -> main 브랜치 전략)
 

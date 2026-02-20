@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from groq import Groq
 from dotenv import load_dotenv
@@ -8,7 +8,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Flask 앱 초기화
-app = Flask(__name__)
+# static_folder를 명시적으로 None으로 설정하여 Flask의 기본 정적 파일 서빙을 비활성화하고 수동으로 처리
+app = Flask(__name__, static_folder=None)
 # 모든 도메인에서 오는 요청을 허용하도록 CORS 설정 (개발 목적으로 모든 오리진 허용)
 CORS(app)
 
@@ -94,7 +95,20 @@ def convert_tone():
         print(f"Groq API 호출 중 오류 발생: {e}")
         return jsonify({"error": f"AI 변환 서비스 오류: {str(e)}"}), 500
 
+# 정적 파일 서빙: 루트 URL (http://127.0.0.1:5000/) 요청 시 index.html 반환
+@app.route('/')
+def serve_index():
+    return send_from_directory('../frontend', 'index.html')
+
+# 정적 파일 서빙: frontend 디렉토리 내의 다른 파일들 (css, js 등) 처리
+@app.route('/<path:path>')
+def serve_static_files(path):
+    # 보안을 위해 '..'와 같은 경로 조작 방지
+    if ".." in path:
+        return "Path traversal attempt detected", 400
+    return send_from_directory('../frontend', path)
+
 # 이 파일이 직접 실행될 때 Flask 개발 서버를 시작합니다.
 if __name__ == '__main__':
-    # 디버그 모드로 실행, 포트는 5001로 설정
+    # 디버그 모드로 실행, 포트는 5000으로 설정
     app.run(debug=True, port=5001)

@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const copyBtn = document.getElementById('copy-btn');
 
     const MAX_CHARS = 500;
-    const API_URL = 'http://127.0.0.1:5001/api/convert';
+    const API_URL = '/api/convert'; // backend에서 serve하므로 상대 경로 사용 가능
 
     // 글자 수 카운터 업데이트 이벤트 리스너
     originalTextInput.addEventListener('input', () => {
@@ -16,10 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
         charCounter.textContent = `${currentChars} / ${MAX_CHARS}`;
         
         if (currentChars > MAX_CHARS) {
-            charCounter.style.color = 'var(--error-color)';
+            charCounter.classList.add('text-red-500');
+            charCounter.classList.remove('text-gray-400');
             convertBtn.disabled = true;
         } else {
-            charCounter.style.color = 'var(--placeholder-color)';
+            charCounter.classList.remove('text-red-500');
+            charCounter.classList.add('text-gray-400');
             convertBtn.disabled = false;
         }
     });
@@ -71,9 +73,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // 복사하기 버튼 클릭 이벤트 리스너
     copyBtn.addEventListener('click', () => {
         const textToCopy = outputTextContainer.innerText;
-        if (textToCopy && textToCopy !== '이곳에 변환 결과가 표시됩니다.') {
+        // placeholder 텍스트인지 확인
+        if (textToCopy && !outputTextContainer.querySelector('.italic')) {
             navigator.clipboard.writeText(textToCopy).then(() => {
-                alert('클립보드에 복사되었습니다!');
+                const originalText = copyBtn.innerText;
+                copyBtn.innerText = '복사됨!';
+                copyBtn.classList.add('bg-green-50', 'text-green-600', 'border-green-200');
+                
+                setTimeout(() => {
+                    copyBtn.innerText = originalText;
+                    copyBtn.classList.remove('bg-green-50', 'text-green-600', 'border-green-200');
+                }, 2000);
             }).catch(err => {
                 console.error('복사 실패:', err);
                 alert('복사에 실패했습니다.');
@@ -85,10 +95,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function setLoadingState(isLoading) {
         if (isLoading) {
             convertBtn.disabled = true;
-            convertBtn.innerHTML = '<span class="spinner"></span>변환 중...';
+            convertBtn.innerHTML = '<span class="spinner"></span> <span>변환 중...</span>';
+            // 결과 영역 초기화
+            outputTextContainer.innerHTML = '<p class="text-gray-400 italic animate-pulse">변환 중입니다. 잠시만 기다려주세요...</p>';
+            copyBtn.disabled = true;
         } else {
             convertBtn.disabled = false;
-            convertBtn.innerHTML = '변환하기';
+            convertBtn.innerHTML = '<span>변환하기</span>';
         }
     }
 
@@ -97,11 +110,15 @@ document.addEventListener('DOMContentLoaded', () => {
         outputTextContainer.innerHTML = ''; // 기존 내용 삭제
         const resultParagraph = document.createElement('p');
         resultParagraph.innerText = text;
+        
         if (isError) {
-            resultParagraph.style.color = 'var(--error-color)';
+            resultParagraph.className = 'text-red-500 font-medium';
+            copyBtn.disabled = true;
+        } else {
+            resultParagraph.className = 'text-gray-800 leading-relaxed';
+            copyBtn.disabled = false;
         }
+        
         outputTextContainer.appendChild(resultParagraph);
-        copyBtn.disabled = isError;
     }
 });
-
