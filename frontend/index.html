@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BizTone Converter</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>BizTone Converter</h1>
+            <p>당신의 문장을 비즈니스 상황에 맞게 변환해 드립니다.</p>
+        </header>
+        <main class="converter-wrapper">
+            <!-- 좌측: 입력 패널 -->
+            <div class="panel input-panel">
+                <h2>원본 텍스트 입력</h2>
+                <div class="textarea-container">
+                    <textarea id="original-text" placeholder="변환할 내용을 입력하세요... (최대 500자)"></textarea>
+                    <div id="char-counter" class="char-counter">0 / 500</div>
+                </div>
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="target-select">누구에게 보내나요?</label>
+                        <select id="target-select">
+                            <option value="상사" selected>상사</option>
+                            <option value="타팀 동료">타팀 동료</option>
+                            <option value="고객">고객</option>
+                        </select>
+                    </div>
+                    <button id="convert-btn">변환하기</button>
+                </div>
+            </div>
+
+            <!-- 우측: 결과 패널 -->
+            <div class="panel output-panel">
+                <h2>변환된 텍스트</h2>
+                <div id="output-text" class="textarea-container result-container">
+                    <p class="placeholder">이곳에 변환 결과가 표시됩니다.</p>
+                </div>
+                <button id="copy-btn" class="copy-btn" disabled>복사하기</button>
+            </div>
+        </main>
+    </div>
+    
+    <script src="js/script.js"></script>
+</body>
+</html>
